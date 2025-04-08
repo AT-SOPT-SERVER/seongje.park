@@ -1,5 +1,3 @@
-
-
 package org.sopt;
 
 import java.util.Scanner;
@@ -38,7 +36,7 @@ public class Main {
                 case "3":
                     System.out.println("\n🔍 [게시글 상세 조회]");
                     System.out.print("📌 조회할 게시글 ID를 입력해주세요: ");
-                    int id = Integer.parseInt(scanner.nextLine());
+                    long id = Integer.parseInt(scanner.nextLine());
                     Post found = controller.getPostById(id);
                     if (found != null) {
                         System.out.println("📄 게시글 상세 내용:");
@@ -54,7 +52,7 @@ public class Main {
                 case "4":
                     System.out.println("\n🗑️ [게시글 삭제]");
                     System.out.print("📌 삭제할 게시글 ID를 입력해주세요: ");
-                    int deleteId = Integer.parseInt(scanner.nextLine());
+                    long deleteId = Integer.parseInt(scanner.nextLine());
                     boolean deleted = controller.deletePostById(deleteId);
                     if (deleted) {
                         System.out.println("🗑️ 게시글이 성공적으로 삭제되었습니다.");
@@ -62,6 +60,45 @@ public class Main {
                         System.out.println("❌ 삭제할 게시글이 존재하지 않습니다.");
                     }
                     break;
+                case "5":
+                    System.out.println("게시글 검색 기능");
+                    System.out.println("검색할 게시글의 ID 또는 제목을 입력해주세요 : ");
+
+                    Long postId = null;
+                    String postTitle = null;
+
+                    String postIdInput = scanner.nextLine();
+                    if (!postIdInput.isBlank()) postId = Long.parseLong(postIdInput);
+
+                    String postTitleInput = scanner.nextLine();
+                    if (!postTitleInput.isBlank()) postTitle = postTitleInput;
+
+                    Post foundPost = controller.searchPostByCondition(postId, postTitle);
+                    if (foundPost != null) {
+                        System.out.println("📄 게시글 상세 내용:");
+                        System.out.println("-------------------------------------");
+                        System.out.printf("🆔 ID: %d\n", foundPost.getId());
+                        System.out.printf("📌 제목: %s\n", foundPost.getTitle());
+                        System.out.println("-------------------------------------");
+                    } else {
+                        System.out.println("게시글이 존재하지 않습니다.");
+                    }
+                    break;
+
+                case "6":
+                    System.out.println("게시글 제목으로 조회");
+                    String titleInput = scanner.nextLine();
+                    Post postByTitle = controller.getPostByTitle(titleInput);
+                    if (postByTitle != null) {
+                        System.out.println("📄 게시글 상세 내용:");
+                        System.out.println("-------------------------------------");
+                        System.out.printf("🆔 ID: %d\n", postByTitle.getId());
+                        System.out.printf("📌 제목: %s\n", postByTitle.getTitle());
+                        System.out.println("-------------------------------------");
+                    } else {
+                        System.out.println("게시글이 존재하지 않습니다.");
+                    }
+
 
                 case "0":
                     System.out.println("\n👋 프로그램을 종료합니다. 감사합니다!");
@@ -89,4 +126,3 @@ public class Main {
         System.out.println("=====================================");
     }
 }
-

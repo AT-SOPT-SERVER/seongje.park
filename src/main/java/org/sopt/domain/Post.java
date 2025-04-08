@@ -1,17 +1,20 @@
 package org.sopt.domain;
 
+import java.time.LocalDateTime;
+
 public class Post {
-
-    private int id;
-
+    private Long id;
     private String title;
+    private LocalDateTime createdAt;
 
-    public Post(int id, String title) {
+
+    public Post(Long id, String title, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
+        this.createdAt = createdAt;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -19,7 +22,20 @@ public class Post {
         return title;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
+    // 정적 팩토리 메소드
+    public static Post makePost(Long id, String title) {
+        Post post = new Post(id, title, LocalDateTime.now());
+        return post;
+    }
+
+    // 게시글 수정 메소드
+    public void changeTitle(String title){
+        this.title = title;
+    }
 
 
 }

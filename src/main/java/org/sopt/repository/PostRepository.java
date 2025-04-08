@@ -2,50 +2,48 @@ package org.sopt.repository;
 
 import org.sopt.domain.Post;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PostRepository {
 
-    List<Post> postList = new ArrayList<>();
+    // db 사용 X. 내부 메모리 저장소로 postMap 사용
+    private HashMap<Long, Post> postMap = new HashMap<>();
 
     public void save(Post post) {
-        postList.add(post);
+        postMap.put(post.getId(), post);
     }
 
     public List<Post> findAll() {
-        return postList;
-
+        return new ArrayList<>(postMap.values());
     }
 
-    // 게시글 id 로 조회
-    public Post findById(int id){
-
-        for (Post post : postList) {
-            if (post.getId() == id) {
-                return post;
-            }
-        }
-        // 조회 실패시
-        return null;
-
+    public Post findPostById(Long id) {
+        return postMap.get(id);
     }
 
-    public boolean deleteById(int id) {
-
-        // 기본값 false
-        boolean result = false;
-
-        // 삭제 성공시 true 반환
-        for (Post post : postList) {
-            if (post.getId() == id) {
-                postList.remove(post);
-                return true;
-            }
-        }
-
-        // 삭제 실패시 기본값 반환
-        return result;
+    public boolean delete(Long id) {
+        return postMap.remove(id) != null;
     }
+
+    public Post getPostByTitle(String title) {
+        return postMap.values().stream()
+                .filter(post -> post.getTitle().equals(title))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // 게시글 검색 (id, title 검색)
+    public Post searchPostByCondition(Long id, String title){
+
+        return postMap.values().stream()
+                .filter(post ->
+                        (id == null || post.getId().equals(id)) &&
+                                (title == null || post.getTitle().equals(title))
+                )
+                .findFirst()
+                .orElse(null);
+    }
+
+
+
 }
