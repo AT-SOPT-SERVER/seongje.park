@@ -1,25 +1,24 @@
 package org.sopt.util;
 
-import java.text.BreakIterator;
-import java.util.Locale;
+import com.ibm.icu.util.ULocale;
 
-import static java.text.BreakIterator.*;
+import java.util.Locale;
+import com.ibm.icu.text.*;
+
 
 public class StringControlUtil {
 
     public static int countCharacters(String input) {
-        BreakIterator iterator = getCharacterInstance(Locale.getDefault());
+        BreakIterator iterator = BreakIterator.getCharacterInstance(ULocale.getDefault());
+
         iterator.setText(input);
 
         int count = 0;
         int start = iterator.first();
-        while (DONE != start){
+        while (start != BreakIterator.DONE) {
             int end = iterator.next();
-            if (end != DONE){
-                count++;
-            } else{
-                break;
-            }
+            if (end == BreakIterator.DONE) break;
+            count++;
         }
         return count;
     }
