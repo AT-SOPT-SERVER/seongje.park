@@ -53,7 +53,7 @@ public class PostController {
     }
 
     private static void validateTitleEmptyAndLength(String title) {
-        if (title == null){
+        if (title == null || title.isBlank()){
             throw new RuntimeException("게시글 제목이 비어있습니다.");
         }
         // 제목이 30자를 넘지 않는지 검증 (+추가 기능 : 제목에 이모지를 허용하고, 이모지를 1글자가 되도록)
