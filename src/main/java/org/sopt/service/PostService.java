@@ -3,15 +3,22 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.util.PostIdUtil;
 import org.sopt.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class PostService {
 
-    private final PostRepository postRepository = new PostRepository();
+    private final PostRepository postRepository;
     private final FileService fileService = new FileService();
+
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     public void createPost(String title) {
         // 게시글 작성의 시간간격 검증
@@ -26,6 +33,9 @@ public class PostService {
 
         // 게시글을 파일로 저장. (게시글의 id 와 title 만 txt 파일에 작성하면 됨.)
         fileService.saveToFile(post);
+
+
+        System.out.println(post.getTitle());
 
 
     }

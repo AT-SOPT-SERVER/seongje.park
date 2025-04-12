@@ -1,13 +1,16 @@
 package org.sopt.repository;
 
 import org.sopt.domain.Post;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
 public class PostRepository {
 
     // db 사용 X. 내부 메모리 저장소로 postMap 사용
     private HashMap<Long, Post> postMap = new HashMap<>();
+
 
     public void save(Post post) {
         postMap.put(post.getId(), post);

@@ -1,27 +1,41 @@
 package org.sopt.controller;
 
 import org.sopt.domain.Post;
+import org.sopt.dto.PostRequestDto;
 import org.sopt.service.PostService;
 import org.sopt.util.StringControlUtil;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
 
+@RestController
 public class PostController {
-    private final PostService postService = new PostService();
+
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     // 게시글 작성하기
-    public void createPost(final String title) {
-        validateTitleEmptyAndLength(title);
+    @PostMapping("/post")
+    public void createPost(@RequestBody PostRequestDto postRequest) {
+        validateTitleEmptyAndLength(postRequest.getTitle());
 
         // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
-        postService.createPost(title);
+        postService.createPost(postRequest.getTitle());
     }
 
 
     // 모든 게시글 조회
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    @GetMapping("/posts")
+    public ResponseEntity<?> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
     }
 
     // id 로 게시글 조회
