@@ -5,10 +5,7 @@ import org.sopt.dto.PostRequestDto;
 import org.sopt.service.PostService;
 import org.sopt.util.StringControlUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +36,8 @@ public class PostController {
     }
 
     // id 로 게시글 조회
-    public Post getPostById(Long id) {
+    @GetMapping("/posts/{id}")
+    public Post getPostById(@PathVariable Long id) {
         return postService.getPostById(id);
     }
 
