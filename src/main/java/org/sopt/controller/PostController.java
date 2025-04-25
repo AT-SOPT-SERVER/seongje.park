@@ -20,9 +20,9 @@ public class PostController {
     @PostMapping("/post")
     public void createPost(@RequestBody final PostRequest postRequest) {
 
-        validateTitleEmptyAndLength(postRequest.getTitle());
+        validateTitleEmptyAndLength(postRequest.title());
         // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
-        postService.createPost(postRequest.getTitle());
+        postService.createPost(postRequest.title());
     }
 
 
@@ -54,8 +54,8 @@ public class PostController {
     @PatchMapping("/posts/{id}")
     public void editPost(@PathVariable("id") Long id, @RequestBody PostRequest editRequest){
 
-        validateTitleEmptyAndLength(editRequest.getTitle());
-        postService.editPost(id, editRequest.getTitle());
+        validateTitleEmptyAndLength(editRequest.title());
+        postService.editPost(id, editRequest.title());
 
         // api 응답 필요
     }
