@@ -2,10 +2,18 @@ package org.sopt.controller;
 
 import org.sopt.domain.Post;
 import org.sopt.dto.PostRequest;
+import org.sopt.dto.PostResponse;
+import org.sopt.exception.ApiResponse;
+import org.sopt.exception.ErrorCode;
+import org.sopt.exception.PostException;
 import org.sopt.service.PostService;
 import org.sopt.util.StringControlUtil;
+import org.sopt.validator.PostValidator;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class PostController {
@@ -18,56 +26,55 @@ public class PostController {
 
     // 게시글 작성하기
     @PostMapping("/post")
-    public void createPost(@RequestBody final PostRequest postRequest) {
+    public ResponseEntity<ApiResponse<Void>> createPost(@RequestBody final PostRequest postRequest) {
 
-        validateTitleEmptyAndLength(postRequest.title());
+        PostValidator.validateTitle(postRequest.title());
         // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
         postService.createPost(postRequest.title());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(null, "게시글 생성 성공"));
     }
 
 
     // 모든 게시글 조회
     @GetMapping("/posts")
-    public ResponseEntity<?> getAllPosts() {
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
 
-        return ResponseEntity.ok(postService.getAllPosts());
+        List<PostResponse> posts = postService.getAllPosts();
+        return ResponseEntity.ok(ApiResponse.success(posts));
     }
 
     // id 로 게시글 조회
     @GetMapping("/posts/{id}")
-    public Post getPostById(@PathVariable("id") Long id) {
+    public ResponseEntity<ApiResponse<PostResponse>> getPostById(@PathVariable("id") Long id) {
 
-        return postService.getPostById(id);
+        PostResponse post = postService.getPostById(id);
+        return ResponseEntity.ok(ApiResponse.success(post));
     }
 
 
     //게시글 삭제
     @DeleteMapping("/posts/{id}")
-    public void deletePostById(@PathVariable("id") Long id) {
+    public ResponseEntity<ApiResponse<Void>> deletePostById(@PathVariable("id") Long id) {
 
-        postService.deletePostById(id);
-
+        postService.deletePost(id);
         // api 응답필요
+        return ResponseEntity.ok(ApiResponse.success(null, "게시글이 성공적으로 삭제되었습니다."));
     }
 
     // 게시글 수정
     @PatchMapping("/posts/{id}")
-    public void editPost(@PathVariable("id") Long id, @RequestBody PostRequest editRequest){
+    public ResponseEntity<ApiResponse<Void>> changePostTitle(@PathVariable("id") Long id, @RequestBody PostRequest editRequest){
 
-        validateTitleEmptyAndLength(editRequest.title());
+        PostValidator.validateTitle(editRequest.title());
         postService.editPost(id, editRequest.title());
-
         // api 응답 필요
+
+        return ResponseEntity.ok(ApiResponse.success(null, "게시글이 성공적으로 수정되었습니다."));
+
+
     }
 
-    private static void validateTitleEmptyAndLength(String title) {
-        if (title == null || title.isBlank()){
-            throw new RuntimeException("게시글 제목이 비어있습니다.");
-        }
-        // 제목이 30자를 넘지 않는지 검증 (+추가 기능 : 제목에 이모지를 허용하고, 이모지를 1글자가 되도록)
-        if (StringControlUtil.countCharacters(title) > 30) {
-            throw new RuntimeException("게시글 제목이 30자를 초과했습니다. 현재 글자수 : " +
-                    StringControlUtil.countCharacters(title));
-        }
-    }
+
 }
