@@ -43,17 +43,21 @@ public class PostController {
 
     //게시글 삭제
     @DeleteMapping("/posts/{id}")
-    public boolean deletePostById(@PathVariable("id") Long id) {
+    public void deletePostById(@PathVariable("id") Long id) {
 
-        return postService.deletePostById(id);
+        postService.deletePostById(id);
+
+        // api 응답필요
     }
 
     // 게시글 수정
-    @PatchMapping("/posts/{id")
+    @PatchMapping("/posts/{id}")
     public void editPost(@PathVariable("id") Long id, @RequestBody PostRequest editRequest){
 
         validateTitleEmptyAndLength(editRequest.getTitle());
         postService.editPost(id, editRequest.getTitle());
+
+        // api 응답 필요
     }
 
     private static void validateTitleEmptyAndLength(String title) {

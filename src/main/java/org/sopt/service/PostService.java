@@ -61,6 +61,9 @@ public class PostService {
         foundPost.changeTitle(title);
         // 영속성 컨텍스트는 변경감지 기능이 있기 때문에, save 따로 해줄 필요 없음
 
+        // 디버깅용
+        System.out.println("수정 성공 : " + foundPost.getTitle());
+
     }
 
     public Post getPostByTitle(String title) {
