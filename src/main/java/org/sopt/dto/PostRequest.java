@@ -1,15 +1,15 @@
 package org.sopt.dto;
 
 
-public class PostRequestDto {
+public class PostRequest {
 
     private String title;
 
-    public PostRequestDto() {
+    public PostRequest() {
 
     }
 
-    public PostRequestDto(String title) {
+    public PostRequest(String title) {
         this.title = title;
     }
 
