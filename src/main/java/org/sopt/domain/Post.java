@@ -1,18 +1,27 @@
 package org.sopt.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 
+@Entity
 public class Post {
+
+    @Id @GeneratedValue
     private Long id;
     private String title;
     private LocalDateTime createdAt;
 
+    public Post(){
 
-    public Post(Long id, String title, LocalDateTime createdAt) {
-        this.id = id;
-        this.title = title;
-        this.createdAt = createdAt;
     }
+
+    public Post(String title) {
+        this.title = title;
+    }
+
 
     public Long getId() {
         return id;
@@ -22,17 +31,6 @@ public class Post {
         return title;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    // 정적 팩토리 메소드
-    public static Post makePost(Long id, String title) {
-        Post post = new Post(id, title, LocalDateTime.now());
-        return post;
-    }
-
-    // 게시글 수정 메소드
     public void changeTitle(String title){
         this.title = title;
     }
