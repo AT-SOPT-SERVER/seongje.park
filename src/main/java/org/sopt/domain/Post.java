@@ -25,9 +25,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Tag tag;
 
-
     protected Post(){
-
     }
 
     public Post(User user, String title , String content, Tag tag) {
@@ -59,36 +57,17 @@ public class Post {
         }
 
     }
-
     public User getUser() {
         return user;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
