@@ -16,4 +16,11 @@ public class PostValidator {
             throw new PostException(ErrorCode.TITLE_TOO_LONG);
         }
     }
+
+    public static void validateContent(String content) {
+
+        if (content == null || content.isBlank()) {
+            throw new PostException(ErrorCode.TITLE_EMPTY);
+        }
+    }
 }
