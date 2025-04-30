@@ -1,7 +1,9 @@
 package org.sopt.dto;
 
 
-public record PostRequest(String title){
+import org.sopt.domain.enums.Tag;
+
+public record PostRequest(String title, String content, Tag tag){
 
 }
 

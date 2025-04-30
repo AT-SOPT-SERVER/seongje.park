@@ -26,11 +26,16 @@ public class PostController {
 
     // 게시글 작성하기
     @PostMapping("/post")
-    public ResponseEntity<ApiResponse<Void>> createPost(@RequestBody final PostRequest postRequest) {
+    public ResponseEntity<ApiResponse<Void>> createPost(
+            @RequestHeader Long userId,
+            @RequestBody final PostRequest postCreateRequest) {
 
-        PostValidator.validateTitle(postRequest.title());
+        PostValidator.validateTitle(postCreateRequest.title());
         // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
-        postService.createPost(postRequest.title());
+        // 검증사항 추가 ++ : 게시글 내용은 1,000자를 넘지 않아야 한다.
+        postService.createPost(userId,
+                postCreateRequest.title(), postCreateRequest.content(),
+                postCreateRequest.tag());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(null, "게시글 생성 성공"));

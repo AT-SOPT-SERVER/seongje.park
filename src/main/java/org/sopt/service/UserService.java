@@ -15,7 +15,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void saveUser(UserCreateRequest userCreateRequest){
-        userRepository.save(new User(userCreateRequest.name() , userCreateRequest.email()));
+    // 회원가입
+    public void join(UserCreateRequest userCreateRequest){
+
+
+        User user = new User(userCreateRequest.name(), userCreateRequest.email());
+        userRepository.save(user);
     }
 }
