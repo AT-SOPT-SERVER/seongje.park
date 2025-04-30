@@ -6,6 +6,7 @@ public enum ErrorCode {
     TITLE_TOO_LONG(400, "게시글 제목이 30자를 초과했습니다."),
     DUPLICATE_TITLE(400, "중복된 게시글이 존재합니다."),
 
+    CONTENT_EMPTY(400, "게시글 내용이 비어있습니다."),
 
     POST_NOT_FOUND(404, "해당 게시글이 존재하지 않습니다."),
 
