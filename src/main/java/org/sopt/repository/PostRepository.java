@@ -15,6 +15,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByOrderByCreatedAtAsc();
 
-    Optional<Post> findByUserNameContaining(String userName);
+    Optional<List<Post>> findByUserNameContaining(String userName);
+
+
+    
+
 
 }

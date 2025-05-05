@@ -58,6 +58,22 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(post));
     }
 
+    // title 로 게시글 조회
+    @GetMapping("/posts/search/title")
+    public ResponseEntity<ApiResponse<PostResponse>> getPostByTitle(@RequestParam String title) {
+
+        PostResponse post = postService.searchPostByTitle(title);
+        return ResponseEntity.ok(ApiResponse.success(post));
+    }
+
+    // userName 으로 게시글 조회
+    @GetMapping("/posts/search/userName")
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByUserName(@RequestParam String userName) {
+
+        List<PostResponse> posts = postService.searchPostByAuthor(userName);
+        return ResponseEntity.ok(ApiResponse.success(posts));
+
+    }
 
     //게시글 삭제
     @DeleteMapping("/posts/{id}")

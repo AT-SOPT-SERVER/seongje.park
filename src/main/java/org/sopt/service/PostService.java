@@ -103,11 +103,14 @@ public class PostService {
         return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUser().getName());
     }
 
-    public PostResponse searchPostByAuthor(String userName){
-        Post post = postRepository.findByUserNameContaining(userName)
+    public List<PostResponse> searchPostByAuthor(String userName){
+        List<Post> post = postRepository.findByUserNameContaining(userName)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUser().getName());
+        return post.stream()
+                .map(p -> new PostResponse(p.getId(), p.getTitle(),
+                        p.getContent(), p.getUser().getName()))
+                .collect(Collectors.toList());
 
     }
 
