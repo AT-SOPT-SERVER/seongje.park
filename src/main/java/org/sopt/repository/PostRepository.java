@@ -11,10 +11,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     boolean existsByTitle(String title);
 
-    Optional<Post> getPostByTitle(String title);
+    Optional<Post> findByTitleContaining(String title);
+
+    List<Post> findAllByOrderByCreatedAtAsc();
+
+    Optional<List<Post>> findByUserNameContaining(String userName);
 
 
-
+    
 
 
 }

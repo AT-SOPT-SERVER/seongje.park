@@ -1,25 +1,39 @@
 package org.sopt.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.sopt.domain.enums.Tag;
 
 import java.time.LocalDateTime;
 
 @Entity
 public class Post {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
+
+    private String content;
+
     private LocalDateTime createdAt;
 
-    public Post(){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    @Enumerated(EnumType.STRING)
+    private Tag tag;
+
+    protected Post(){
     }
 
-    public Post(String title) {
+    public Post(User user, String title , String content, Tag tag) {
         this.title = title;
+        this.content = content;
+        this.createdAt = LocalDateTime.now();
+        this.tag = tag;
+        assignUser(user); // 연관관계 편의 메소드 설정
     }
 
 
@@ -33,6 +47,26 @@ public class Post {
 
     public void changeTitle(String title){
         this.title = title;
+    }
+
+    // 연관관계 편의 메소드
+    public void assignUser(User user){
+        this.user = user;
+        if (!user.getPosts().contains(this)){
+            user.getPosts().add(this);
+        }
+
+    }
+    public User getUser() {
+        return user;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
 
