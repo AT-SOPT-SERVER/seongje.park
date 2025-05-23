@@ -1,4 +1,4 @@
-package org.sopt.controller;
+package org.sopt.controller.user;
 
 import org.sopt.dto.UserCreateRequest;
 import org.sopt.service.UserService;

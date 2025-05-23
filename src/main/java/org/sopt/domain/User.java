@@ -2,12 +2,19 @@ package org.sopt.domain;
 
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sopt.common.entity.BaseEntity;
+
 @Entity
-public class User {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,31 +24,19 @@ public class User {
 
     private String email;
 
-    @OneToMany(mappedBy = "user")
+    // User 가 작성한 게시글
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
-    protected User(){
-    }
+    // User 가 작성한 댓글
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
 
     public User(String name, String email) {
         this.name = name;
         this.email = email;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public List<Post> getPosts() {
-        return posts;
-    }
 
 }

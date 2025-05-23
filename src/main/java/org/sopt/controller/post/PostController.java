@@ -1,13 +1,14 @@
-package org.sopt.controller;
+package org.sopt.controller.post;
 
-import org.sopt.domain.Post;
+import org.sopt.dto.CommentCreateRequest;
+import org.sopt.dto.CommentEditRequest;
+import org.sopt.dto.CommentResponse;
+import org.sopt.dto.PostCommentResponse;
 import org.sopt.dto.PostRequest;
 import org.sopt.dto.PostResponse;
+import org.sopt.dto.PostSimpleResponse;
 import org.sopt.exception.ApiResponse;
-import org.sopt.exception.ErrorCode;
-import org.sopt.exception.PostException;
 import org.sopt.service.PostService;
-import org.sopt.util.StringControlUtil;
 import org.sopt.validator.PostValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,19 +27,17 @@ public class PostController {
 
     // 게시글 작성하기
     @PostMapping("/post")
-    public ResponseEntity<ApiResponse<Void>> createPost(
+    public ResponseEntity<ApiResponse<PostSimpleResponse>> createPost(
             @RequestHeader Long userId,
             @RequestBody final PostRequest postCreateRequest) {
 
         PostValidator.validateTitle(postCreateRequest.title());
         // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
         // 검증사항 추가 ++ : 게시글 내용은 1,000자를 넘지 않아야 한다.
-        postService.createPost(userId,
-                postCreateRequest.title(), postCreateRequest.content(),
-                postCreateRequest.tag());
+        PostSimpleResponse createdPost = postService.createPost(userId, postCreateRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(null, "게시글 생성 성공"));
+                .body(ApiResponse.success(createdPost, "게시글 생성 성공"));
     }
 
 
@@ -96,6 +95,53 @@ public class PostController {
 
 
     }
+
+    // 댓글 작성 (어떤 게시물에 누가 댓글을 작성할 것인지 알아야함)
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<ApiResponse<PostCommentResponse>> makeComment(
+        @RequestHeader Long userId,
+        @PathVariable("postId") Long postId, @RequestBody CommentCreateRequest createRequest){
+
+        PostCommentResponse createdComment = postService.writeComment(userId, postId, createRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.success(createdComment, "댓글 작성 성공"));
+
+    }
+
+    // 댓글 수정 .
+    @PatchMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse<CommentResponse>> editComment(
+        @RequestHeader Long userId, @PathVariable("commentId") Long commentId,
+        @RequestBody CommentEditRequest editRequest){
+
+        CommentResponse editedComment = postService.editComment(userId, commentId, editRequest);
+
+        return ResponseEntity.ok(ApiResponse.success(editedComment, "댓글이 성공적으로 수정되었습니다."));
+
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+        @RequestHeader Long userId, @PathVariable("commentId") Long commentId){
+
+        postService.deleteComment(userId, commentId);
+
+        return ResponseEntity.ok(ApiResponse.success(null, "댓글 삭제가 성공적으로 수행되었습니다."));
+    }
+
+    // 댓글 조회 (특정 게시물의 댓글 모두 조회)
+    @GetMapping("/posts/{postId}/comments")
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> getAllCommentsByPost(
+        @PathVariable("postId") Long postId) {
+
+        List<CommentResponse> comments = postService.getAllCommentsByPost(postId);
+
+        return ResponseEntity.ok(ApiResponse.success(comments, "댓글 조회 성공"));
+    }
+
+
 
 
 }

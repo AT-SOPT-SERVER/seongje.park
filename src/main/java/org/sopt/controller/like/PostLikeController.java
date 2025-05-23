@@ -1,0 +1,29 @@
+package org.sopt.controller.like;
+
+import org.sopt.dto.PostCommentResponse;
+import org.sopt.exception.ApiResponse;
+import org.sopt.service.PostLikeService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+// 게시글에 좋아요 수 증가
+public class PostLikeController {
+
+	private final PostLikeService postLikeService;
+
+	@PatchMapping("/posts/{postId}/likes")
+	public ResponseEntity<ApiResponse<PostCommentResponse>> addLikeFromPost(
+		@PathVariable("postId") Long postId, @RequestHeader Long userId) {
+
+		PostCommentResponse post = postLikeService.likePost(postId, userId);
+		return ResponseEntity.ok(ApiResponse.success(post, "좋아요 누르기 성공"));
+	}
+
+}
