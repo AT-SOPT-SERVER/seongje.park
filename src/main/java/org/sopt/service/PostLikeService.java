@@ -8,9 +8,9 @@ import org.sopt.domain.like.PostLike;
 import org.sopt.dto.post.PostResponse;
 import org.sopt.exception.PostException;
 import org.sopt.exception.UserException;
-import org.sopt.repository.PostLikeRepository;
-import org.sopt.repository.PostRepository;
-import org.sopt.repository.UserRepository;
+import org.sopt.repository.like.PostLikeRepository;
+import org.sopt.repository.post.PostRepository;
+import org.sopt.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

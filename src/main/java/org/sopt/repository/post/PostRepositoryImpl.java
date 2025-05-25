@@ -1,4 +1,4 @@
-package org.sopt.repository;
+package org.sopt.repository.post;
 
 import static org.sopt.domain.QPost.*;
 import static org.sopt.domain.QUser.*;
@@ -18,7 +18,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
 
-public class PostRepositoryImpl implements PostRepositoryCustom{
+public class PostRepositoryImpl implements PostRepositoryCustom {
 
 	// EntityManager, JpaQueryFactory 주입
 	private final EntityManager em;

@@ -2,12 +2,15 @@ package org.sopt.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import org.sopt.common.entity.BaseEntity;
 import org.sopt.domain.enums.Tag;
 import org.sopt.domain.like.PostLike;
+import org.sopt.dto.post.PostRequest;
+import org.springframework.web.bind.annotation.CookieValue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,8 +37,15 @@ public class Post extends BaseEntity {
     private User user;
 
 
+    // 고민해볼점
+    // tags 를 값 타입 컬렉션으로 설정할까? 엔티티로 관리할까
+    // 게시글은 tag 를 최대 2개까지 가질 수 있음.
+    // tag 에 대한 crud 가 빈번하거나, tag 에 추가정보가 엔티티로 승격하는게 맞지만
+    // 지금의 요구사항에서는 그렇지 않으므로 값타입 컬렉션으로 간단화하는게 맞다고 판단함
+    @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    private Tag tag;
+    @Column(name = "tag")
+    private List<Tag> tags;
 
     // 요구사항에 댓글 추가. 게시글에는 댓글이 여러개 있을 수 있다.
     // 게시글이 삭제되면, 댓글도 삭제되어야함
@@ -52,14 +62,22 @@ public class Post extends BaseEntity {
     private List<PostLike> likes = new ArrayList<>();
 
 
-
-
-    public Post(User user, String title , String content, Tag tag) {
+    @Builder
+    public Post(User user, String title , String content, List<Tag> tags) {
         this.title = title;
         this.content = content;
         this.createdAt = LocalDateTime.now();
-        this.tag = tag;
+        this.tags = tags;
         assignUser(user); // 연관관계 편의 메소드 설정
+    }
+
+    public static Post makePost(User user, PostRequest request) {
+        return Post.builder()
+            .user(user)
+            .title(request.title())
+            .content(request.content())
+            .tags(request.tags())
+            .build();
     }
 
     public void changeTitle(String title){

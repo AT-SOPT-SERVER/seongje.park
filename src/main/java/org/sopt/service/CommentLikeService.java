@@ -8,9 +8,9 @@ import org.sopt.domain.like.CommentLike;
 import org.sopt.dto.comment.CommentResponse;
 import org.sopt.exception.CommentException;
 import org.sopt.exception.UserException;
-import org.sopt.repository.CommentLikeRepository;
-import org.sopt.repository.CommentRepository;
-import org.sopt.repository.UserRepository;
+import org.sopt.repository.like.CommentLikeRepository;
+import org.sopt.repository.comment.CommentRepository;
+import org.sopt.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.sopt.repository;
+package org.sopt.repository.comment;
 
 import java.util.List;
 

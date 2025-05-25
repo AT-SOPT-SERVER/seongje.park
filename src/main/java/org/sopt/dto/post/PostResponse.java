@@ -3,6 +3,7 @@ package org.sopt.dto.post;
 import java.util.List;
 
 import org.sopt.domain.Post;
+import org.sopt.domain.enums.Tag;
 import org.sopt.dto.comment.CommentResponse;
 // 게시글 상세조회시 응답 DTO
 
@@ -14,7 +15,9 @@ public record PostResponse(
 	String userName,
 	List<CommentResponse> comments,
 	// 좋아요 추가
-	Integer likeCount
+	Integer likeCount,
+	// 태그도 출력
+	List<Tag> tags
 
 ) {
 
@@ -29,7 +32,8 @@ public record PostResponse(
 			post.getContent(),
 			post.getUser().getName(),
 			commentDtos,
-			post.getLikeCount()
+			post.getLikeCount(),
+			post.getTags()
 		);
 
 	}

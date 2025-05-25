@@ -14,9 +14,9 @@ import org.sopt.exception.AuthorityException;
 import org.sopt.exception.CommentException;
 import org.sopt.exception.PostException;
 import org.sopt.exception.UserException;
-import org.sopt.repository.CommentRepository;
-import org.sopt.repository.UserRepository;
-import org.sopt.repository.PostRepository;
+import org.sopt.repository.comment.CommentRepository;
+import org.sopt.repository.user.UserRepository;
+import org.sopt.repository.post.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,8 @@ public class PostService {
         // 중복된 제목 존재하면 true 반환되므로 , 예외 처리.
         validateTitleExists(postRequest.title());
         // 예외 안터지면 아래줄로 내려와서 게시글 작성 진행 continue.
-        Post post = new Post(user, postRequest.title() , postRequest.content(), postRequest.tag()); // 생성자 안에서 연관관계 설정 완료.
+        Post post = Post.makePost(user, postRequest);
+        // Post post = new Post(user, postRequest.title() , postRequest.content(), postRequest.tags()); // 생성자 안에서 연관관계 설정 완료.
         postRepository.save(post);
 
         return PostSimpleResponse.from(post);

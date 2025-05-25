@@ -1,4 +1,4 @@
-package org.sopt.repository;
+package org.sopt.repository.post;
 
 import org.sopt.dto.PostSearchCondition;
 import org.sopt.dto.post.PostSimpleResponse;

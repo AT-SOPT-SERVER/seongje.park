@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class PostController {
 
@@ -32,7 +34,7 @@ public class PostController {
     @PostMapping("/post")
     public ResponseEntity<ApiResponse<PostSimpleResponse>> createPost(
             @RequestHeader Long userId,
-            @RequestBody final PostRequest postCreateRequest) {
+            @RequestBody @Valid final PostRequest postCreateRequest) {
 
         PostValidator.validateTitle(postCreateRequest.title());
         // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
@@ -117,7 +119,7 @@ public class PostController {
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<PostResponse>> makeComment(
         @RequestHeader Long userId,
-        @PathVariable("postId") Long postId, @RequestBody CommentCreateRequest createRequest){
+        @PathVariable("postId") Long postId, @RequestBody @Valid CommentCreateRequest createRequest){
 
         PostResponse createdComment = postService.writeComment(userId, postId, createRequest);
 

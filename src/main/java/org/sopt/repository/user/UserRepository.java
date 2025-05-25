@@ -1,4 +1,4 @@
-package org.sopt.repository;
+package org.sopt.repository.user;
 
 import org.sopt.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

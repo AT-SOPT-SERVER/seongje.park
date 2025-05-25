@@ -1,4 +1,4 @@
-package org.sopt.repository;
+package org.sopt.repository.like;
 
 import org.sopt.domain.Comment;
 import org.sopt.domain.User;
