@@ -131,6 +131,11 @@ public class PostService {
         return postList.map(PostSimpleResponse::from);
     }
 
+    // querydsl 로 동적 쿼리 검색 (제목, 작성자 기준)
+    public Page<PostSimpleResponse> searchPostByTitleAndUserName(Pageable pageable , PostSearchCondition condition) {
+        return postRepository.searchByTitleAndAuthor(pageable, condition);
+
+    }
 
     // 게시글 단건 상세 조회에서는 , 제목과 내용, 작성자가 모두 보이도록 설정
     public PostResponse getPostById(Long id) {
@@ -280,8 +285,5 @@ public class PostService {
 
     }
 
-    public Page<PostSimpleResponse> searchPostByTitleAndUserName(Pageable pageable , PostSearchCondition condition) {
-        return postRepository.searchByTitleAndAuthor(pageable, condition);
 
-    }
 }
