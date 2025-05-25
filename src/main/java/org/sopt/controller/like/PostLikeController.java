@@ -1,6 +1,6 @@
 package org.sopt.controller.like;
 
-import org.sopt.dto.PostCommentResponse;
+import org.sopt.dto.post.PostResponse;
 import org.sopt.exception.ApiResponse;
 import org.sopt.service.PostLikeService;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +19,10 @@ public class PostLikeController {
 	private final PostLikeService postLikeService;
 
 	@PatchMapping("/posts/{postId}/likes")
-	public ResponseEntity<ApiResponse<PostCommentResponse>> addLikeFromPost(
+	public ResponseEntity<ApiResponse<PostResponse>> addLikeFromPost(
 		@PathVariable("postId") Long postId, @RequestHeader Long userId) {
 
-		PostCommentResponse post = postLikeService.likePost(postId, userId);
+		PostResponse post = postLikeService.likePost(postId, userId);
 		return ResponseEntity.ok(ApiResponse.success(post, "좋아요 누르기 성공"));
 	}
 

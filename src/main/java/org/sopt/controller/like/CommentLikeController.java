@@ -1,7 +1,6 @@
 package org.sopt.controller.like;
 
-import org.sopt.dto.CommentResponse;
-import org.sopt.dto.PostCommentResponse;
+import org.sopt.dto.comment.CommentResponse;
 import org.sopt.exception.ApiResponse;
 import org.sopt.service.CommentLikeService;
 import org.springframework.http.ResponseEntity;

@@ -1,13 +1,12 @@
 package org.sopt.controller.post;
 
-import org.sopt.dto.CommentCreateRequest;
-import org.sopt.dto.CommentEditRequest;
-import org.sopt.dto.CommentResponse;
-import org.sopt.dto.PostCommentResponse;
-import org.sopt.dto.PostRequest;
-import org.sopt.dto.PostResponse;
+import org.sopt.dto.comment.CommentCreateRequest;
+import org.sopt.dto.comment.CommentEditRequest;
+import org.sopt.dto.comment.CommentResponse;
+import org.sopt.dto.post.PostResponse;
+import org.sopt.dto.post.PostRequest;
 import org.sopt.dto.PostSearchCondition;
-import org.sopt.dto.PostSimpleResponse;
+import org.sopt.dto.post.PostSimpleResponse;
 import org.sopt.exception.ApiResponse;
 import org.sopt.service.PostService;
 import org.sopt.validator.PostValidator;
@@ -116,11 +115,11 @@ public class PostController {
 
     // 댓글 작성 (어떤 게시물에 누가 댓글을 작성할 것인지 알아야함)
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<ApiResponse<PostCommentResponse>> makeComment(
+    public ResponseEntity<ApiResponse<PostResponse>> makeComment(
         @RequestHeader Long userId,
         @PathVariable("postId") Long postId, @RequestBody CommentCreateRequest createRequest){
 
-        PostCommentResponse createdComment = postService.writeComment(userId, postId, createRequest);
+        PostResponse createdComment = postService.writeComment(userId, postId, createRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.success(createdComment, "댓글 작성 성공"));

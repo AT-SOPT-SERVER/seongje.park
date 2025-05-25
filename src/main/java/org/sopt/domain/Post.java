@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 
 import org.sopt.common.entity.BaseEntity;
 import org.sopt.domain.enums.Tag;
-import org.sopt.domain.like.CommentLike;
 import org.sopt.domain.like.PostLike;
-import org.sopt.dto.CommentCreateRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import static org.sopt.exception.ErrorCode.*;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.domain.like.PostLike;
-import org.sopt.dto.PostCommentResponse;
+import org.sopt.dto.post.PostResponse;
 import org.sopt.exception.PostException;
 import org.sopt.exception.UserException;
 import org.sopt.repository.PostLikeRepository;
@@ -23,7 +23,7 @@ public class PostLikeService {
 	private final PostRepository postRepository;
 	private final PostLikeRepository postLikeRepository;
 
-	public PostCommentResponse likePost(Long postId, Long userId) {
+	public PostResponse likePost(Long postId, Long userId) {
 
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostException(POST_NOT_FOUND));
@@ -48,6 +48,6 @@ public class PostLikeService {
 			postLikeRepository.save(like);
 		}
 
-		return PostCommentResponse.from(post);
+		return PostResponse.from(post);
 	}
 }

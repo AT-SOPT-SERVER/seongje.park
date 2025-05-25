@@ -1,6 +1,5 @@
-package org.sopt.dto;
+package org.sopt.dto.comment;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
 
 public record CommentCreateRequest(

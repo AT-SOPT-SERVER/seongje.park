@@ -1,7 +1,7 @@
 package org.sopt.repository;
 
 import org.sopt.dto.PostSearchCondition;
-import org.sopt.dto.PostSimpleResponse;
+import org.sopt.dto.post.PostSimpleResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

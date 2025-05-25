@@ -1,4 +1,4 @@
-package org.sopt.dto;
+package org.sopt.dto.comment;
 
 import java.time.LocalDateTime;
 

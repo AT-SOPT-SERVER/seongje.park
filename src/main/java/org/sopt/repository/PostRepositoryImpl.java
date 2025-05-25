@@ -5,16 +5,13 @@ import static org.sopt.domain.QUser.*;
 
 import java.util.List;
 
-import org.sopt.domain.QPost;
-import org.sopt.domain.QUser;
 import org.sopt.dto.PostSearchCondition;
-import org.sopt.dto.PostSimpleResponse;
+import org.sopt.dto.post.PostSimpleResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

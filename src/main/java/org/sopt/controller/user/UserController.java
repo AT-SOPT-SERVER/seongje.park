@@ -1,6 +1,6 @@
 package org.sopt.controller.user;
 
-import org.sopt.dto.UserCreateRequest;
+import org.sopt.dto.user.UserCreateRequest;
 import org.sopt.service.UserService;
 import org.sopt.validator.UserValidator;
 import org.springframework.http.HttpStatus;

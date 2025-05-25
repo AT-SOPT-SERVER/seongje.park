@@ -3,33 +3,26 @@ package org.sopt.service;
 import org.sopt.domain.Comment;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
-import org.sopt.domain.enums.Tag;
-import org.sopt.dto.CommentCreateRequest;
-import org.sopt.dto.CommentEditRequest;
-import org.sopt.dto.CommentResponse;
-import org.sopt.dto.PostCommentResponse;
-import org.sopt.dto.PostRequest;
-import org.sopt.dto.PostResponse;
+import org.sopt.dto.comment.CommentCreateRequest;
+import org.sopt.dto.comment.CommentEditRequest;
+import org.sopt.dto.comment.CommentResponse;
+import org.sopt.dto.post.PostResponse;
+import org.sopt.dto.post.PostRequest;
 import org.sopt.dto.PostSearchCondition;
-import org.sopt.dto.PostSimpleResponse;
+import org.sopt.dto.post.PostSimpleResponse;
 import org.sopt.exception.AuthorityException;
 import org.sopt.exception.CommentException;
-import org.sopt.exception.ErrorCode;
 import org.sopt.exception.PostException;
 import org.sopt.exception.UserException;
 import org.sopt.repository.CommentRepository;
 import org.sopt.repository.UserRepository;
-import org.sopt.util.PostIdUtil;
 import org.sopt.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.sopt.exception.ErrorCode.*;
@@ -78,7 +71,7 @@ public class PostService {
         // 근데.. 주석처리한 방식이랑 아래 방식 중 뭘 사용해야할까?
         // 첫번째 방식은 고정된 정렬 방식임. 동적 정렬이 불가
         // 반면, 두번째 방식은 클라이언트가 sort 에 정렬 방식을 주면, 서버에서 동적으로 정렬이 가능.
-        
+
 
         return postList.map(PostSimpleResponse::from);
     }
@@ -123,7 +116,7 @@ public class PostService {
         Post post = postRepository.findByTitleContaining(title)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUser().getName());
+        return PostResponse.from(post);
     }
 
     public List<PostResponse> searchPostByAuthor(String userName){
@@ -131,8 +124,7 @@ public class PostService {
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
         return post.stream()
-                .map(p -> new PostResponse(p.getId(), p.getTitle(),
-                        p.getContent(), p.getUser().getName()))
+                .map(PostResponse::from)
                 .collect(Collectors.toList());
 
     }
@@ -145,7 +137,7 @@ public class PostService {
 
     // 댓글 작성 기능
     @Transactional
-    public PostCommentResponse writeComment(Long userId, Long postId, CommentCreateRequest createRequest) {
+    public PostResponse writeComment(Long userId, Long postId, CommentCreateRequest createRequest) {
 
         // userId로 회원 조회
         User user = userRepository.findById(userId)
@@ -161,7 +153,7 @@ public class PostService {
         commentRepository.save(comment);
 
         // 댓글 작성 결과 반환
-        return PostCommentResponse.from(post);
+        return PostResponse.from(post);
 
 
     }
