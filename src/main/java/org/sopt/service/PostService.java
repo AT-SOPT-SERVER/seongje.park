@@ -17,6 +17,8 @@ import org.sopt.exception.UserException;
 import org.sopt.repository.comment.CommentRepository;
 import org.sopt.repository.user.UserRepository;
 import org.sopt.repository.post.PostRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,10 +32,12 @@ import java.util.stream.Collectors;
 import static org.sopt.exception.ErrorCode.*;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -197,7 +201,10 @@ public class PostService {
 
     // 댓글 작성 기능
     @Transactional
+    @CacheEvict(value = "postComments" , key = "#postId")
     public PostResponse writeComment(Long userId, Long postId, CommentCreateRequest createRequest) {
+
+        log.info("댓글 작성으로 캐시 무효화: postId = {}", postId);
 
         // userId로 회원 조회
         User user = userRepository.findById(userId)
@@ -237,9 +244,18 @@ public class PostService {
         // 권한 검증이 성공하면 댓글 수정 가능하다.
         comment.updateContent(editRequest.content());
 
+        // 수정된 댓글이 속한 게시글의 댓글 목록 캐시 무효화
+        evictPostCommentsCache(comment.getPost().getId());
+        
         return CommentResponse.from(comment);
 
     }
+
+    @CacheEvict(value = "postComments", key = "#postId")
+    public void evictPostCommentsCache(Long postId) {
+        log.info("댓글 목록 캐시 무효화: postId = {}", postId);
+    }
+
 
 
     private static void checkAuthorization(Comment comment, User user) {
@@ -266,9 +282,18 @@ public class PostService {
         // 권한 검증이 성공하면 삭제 수행한다.
         commentRepository.delete(comment);
 
+        // 삭제될 댓글이 속한 게시글 ID 저장
+        Long postId = comment.getPost().getId();
+        
+        // 삭제된 댓글이 속한 게시글의 댓글 목록 캐시 무효화
+        evictPostCommentsCache(postId);
+
     }
 
+    @Cacheable(value = "postComments", key = "#postId")
     public List<CommentResponse> getAllCommentsByPost(Long postId) {
+        log.info("DB에서 댓글 목록 조회: postId = {}", postId);
+
         // postId 로 게시글 조회
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new PostException(POST_NOT_FOUND));
