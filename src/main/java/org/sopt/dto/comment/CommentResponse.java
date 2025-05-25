@@ -9,9 +9,7 @@ public record CommentResponse(
 	String author, // 작성자
 	String content, // 댓글 내용
 	LocalDateTime createdAt, // 작성된 시간
-
-	// 추가
-	Integer likeCount
+	Integer likeCount // 좋아요 수
 ) {
 
 	public static CommentResponse from(Comment comment) {
