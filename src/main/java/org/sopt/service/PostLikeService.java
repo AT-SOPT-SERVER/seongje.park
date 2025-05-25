@@ -44,6 +44,12 @@ public class PostLikeService {
 
 		if (alreadyLiked) {// count - 1
 			post.minusLike();
+
+			PostLike existingLike = postLikeRepository.findByPostAndUser(post, user)
+				.orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+			postLikeRepository.delete(existingLike);
+
 		} else{
 			post.addLike(); // post 의 좋아요 수 1 증가
 			// PostLike 엔티티 만들고 연관관계 세팅해야겠지

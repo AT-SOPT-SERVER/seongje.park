@@ -11,14 +11,17 @@ import org.sopt.exception.UserException;
 import org.sopt.repository.like.CommentLikeRepository;
 import org.sopt.repository.comment.CommentRepository;
 import org.sopt.repository.user.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class CommentLikeService {
 
 	private final CommentLikeRepository commentLikeRepository;
@@ -45,6 +48,11 @@ public class CommentLikeService {
 
 		if (alreadyLiked) {// // 특정 유저가 특정 댓글에 좋아요를 이미 누른 경우라면
 			comment.minusLike();
+
+			CommentLike existingLike = commentLikeRepository.findByCommentAndUser(comment, user)
+				.orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
+			
+			commentLikeRepository.delete(existingLike);
 		} else{ // 특정 유저가 특정 댓글에 좋아요를 누르지 않았다면,
 			comment.addLike();
 			// CommentLike 엔티티 만들고 연관관계 세팅해야겠지
@@ -52,7 +60,18 @@ public class CommentLikeService {
 			commentLikeRepository.save(like);
 		}
 
+		Long postId = comment.getPost().getId();
+		evictPostCommentsCache(postId);
+
+		log.info("댓글 좋아요 토글로 캐시 무효화: commentId = {}, postId = {}, liked = {}",
+			commentId, postId, !alreadyLiked);
+
 		return CommentResponse.from(comment);
+	}
+
+	@CacheEvict(value = "postComments", key = "#postId")
+	public void evictPostCommentsCache(Long postId) {
+		log.info("댓글 좋아요 변경으로 댓글 목록 캐시 무효화: postId = {}", postId);
 	}
 
 }
