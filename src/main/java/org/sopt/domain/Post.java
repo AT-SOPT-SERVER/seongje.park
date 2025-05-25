@@ -15,9 +15,39 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * title index
+ */
+// 인덱스를 어떤 칼럼에 둘 것인가에 대한 고민
+// 게시글 제목에 대한 중복 체크를 할때 existsByTitle 로 검사한다.
+// 이때, table full scan 이 이루어지므로, title 에 대해 인덱스 설정
+
+/**
+ * createdAt index
+ */
+// 게시글을 최신순으로 정렬할때 , order by 를 통해 외부정렬이 이루어지는데,
+// createdAt 으로 인덱스를 만들어놓으면, 정렬을 하지 않아도 됨.
+// 인덱스 타고 내려가면, 리프노드쪽에 레코드와, 레코드 포인터가 저장되어 있음
+// 얘네들 쭉 타고 포인터 읽기만 하면됨.
+
+/**
+ * 작성자별 최신 순 조회 (구현은 안되어 있으나, 추가될 가능성이 있으므로)
+ * user_id, createdAt 에 대해 복합 index
+ */
+
+/** 작성자별 게시글조회
+ * user_id 에 index
+ */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+    @Index(name = "idx_post_title", columnList = "title"),
+    @Index(name = "idx_post_user_id", columnList = "USER_ID"),
+    @Index(name = "idx_post_created_at", columnList = "createdAt DESC"),
+    @Index(name = "idx_post_user_created", columnList = "USER_ID, createdAt DESC")
+
+})
 public class Post extends BaseEntity {
 
     @Id
@@ -32,7 +62,7 @@ public class Post extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
 
