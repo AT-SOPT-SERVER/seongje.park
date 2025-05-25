@@ -10,9 +10,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +23,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+	@Index(name = "idx_comment_post_id", columnList = "POST_ID"),
+	@Index(name = "idx_comment_user_id", columnList = "USER_ID")
+})
+/**
+ * 특정 게시글의 댓글 조회할때, postId 기준으로 검색
+ */
+// post_id 에 인덱스 걸기
+
+/**
+ * 특정 사용자의 댓글 조회 , userId 기준으로 검색
+ */
+// user_id 에 인덱스 걸기
+
+
 public class Comment extends BaseEntity {
 
 	@Id @GeneratedValue
