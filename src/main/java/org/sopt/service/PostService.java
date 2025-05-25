@@ -23,11 +23,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.sopt.exception.ErrorCode.*;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
 
@@ -35,13 +40,62 @@ public class PostService {
     // PostService 에서 member 를 가져와야 하므로 의존성 추가
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    // 비동기 서비스 추가
+    private final AsyncService asyncService;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository
-    ,CommentRepository commentRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-        this.commentRepository = commentRepository;
+    // 게시글 상세 조회 (댓글조회 및  좋아요 수 계산을 병렬 조회)
+    public PostResponse getPostByIdWithAsync(Long id) {
+        Post post = postRepository.findById(id)
+            .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+        try {
+            // 댓글 리스트와 게시글 좋아요 수를 병렬로 조회
+            CompletableFuture<List<CommentResponse>> commentsFuture =
+                asyncService.getCommentsWithLikeCountAsync(id);
+            CompletableFuture<Long> postLikeCountFuture =
+                asyncService.getPostLikeCountAsync(id);
+
+            // 두 작업이 모두 완료될 때까지 대기
+            CompletableFuture<Void> allOf = CompletableFuture.allOf(
+                commentsFuture, postLikeCountFuture);
+
+            return allOf.thenApply(v -> {
+                List<CommentResponse> comments = commentsFuture.join();
+                Long postLikeCount = postLikeCountFuture.join();
+
+                return new PostResponse(
+                    post.getId(),
+                    post.getTitle(),
+                    post.getContent(),
+                    post.getUser().getName(),
+                    comments,
+                    postLikeCount.intValue(),
+                    post.getTags()
+                );
+            }).get(3, TimeUnit.SECONDS);
+
+        } catch (Exception e) {
+            // 비동기 처리 실패 시 동기 방식으로 폴백
+            return getPostById(id);
+        }
     }
+
+    // 댓글만 비동기 처리
+    public List<CommentResponse> getAllCommentsByPostAsync(Long postId){
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+        try{
+            return asyncService.getCommentsWithLikeCountAsync(postId)
+                .get(2, TimeUnit.SECONDS);
+        } catch (Exception e){
+            return getAllCommentsByPost(postId);
+            // 비동기 처리 실패시 동기 방식으로 풀백
+        }
+
+
+    }
+
 
     @Transactional
     public PostSimpleResponse createPost(Long userId, PostRequest postRequest) {

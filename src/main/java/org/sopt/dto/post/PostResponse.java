@@ -25,6 +25,9 @@ public record PostResponse(
 		List<CommentResponse> commentDtos = post.getComments().stream()
 			.map(CommentResponse::from)
 			.toList();
+		// POST 가져오는 쿼리 한번 실행. (1)
+		// COMMENT 목록 가져오는 쿼리 한번 실행(N개의 comment 가져옴)
+		// N개의 comment 에 대해, 작성자를 가져와야하므로 쿼리 N개 나감.
 
 		return new PostResponse(
 			post.getId(),

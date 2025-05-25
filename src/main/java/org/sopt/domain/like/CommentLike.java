@@ -1,6 +1,6 @@
 package org.sopt.domain.like;
 
-import org.sopt.common.entity.BaseEntity;
+import org.sopt.global.common.entity.BaseEntity;
 import org.sopt.domain.Comment;
 import org.sopt.domain.User;
 

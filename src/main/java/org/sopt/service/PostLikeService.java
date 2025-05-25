@@ -12,17 +12,20 @@ import org.sopt.repository.like.PostLikeRepository;
 import org.sopt.repository.post.PostRepository;
 import org.sopt.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostLikeService {
 
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final PostLikeRepository postLikeRepository;
 
+	@Transactional
 	public PostResponse likePost(Long postId, Long userId) {
 
 		Post post = postRepository.findById(postId)

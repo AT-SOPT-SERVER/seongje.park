@@ -12,11 +12,13 @@ import org.sopt.repository.like.CommentLikeRepository;
 import org.sopt.repository.comment.CommentRepository;
 import org.sopt.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentLikeService {
 
 	private final CommentLikeRepository commentLikeRepository;
@@ -24,6 +26,7 @@ public class CommentLikeService {
 	private final UserRepository userRepository;
 
 
+	@Transactional
 	public CommentResponse likeComment(Long commentId, Long userId) {
 
 		Comment comment = commentRepository.findById(commentId)

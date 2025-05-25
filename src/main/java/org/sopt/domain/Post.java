@@ -6,11 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.sopt.common.entity.BaseEntity;
+import org.sopt.global.common.entity.BaseEntity;
 import org.sopt.domain.enums.Tag;
 import org.sopt.domain.like.PostLike;
 import org.sopt.dto.post.PostRequest;
-import org.springframework.web.bind.annotation.CookieValue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -13,7 +13,11 @@ public record CommentResponse(
 ) {
 
 	public static CommentResponse from(Comment comment) {
-		return new CommentResponse(comment.getId(), comment.getAuthor().getName(),
-			comment.getContent(), comment.getCreatedAt(), comment.getLikeCount());
+		return new CommentResponse(
+			comment.getId(),
+			comment.getAuthor().getName(),
+			comment.getContent(),
+			comment.getCreatedAt(),
+			comment.getLikeCount());
 	}
 }

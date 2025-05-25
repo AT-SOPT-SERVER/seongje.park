@@ -9,4 +9,7 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 
 	boolean existsByPostAndUser(Post post, User user);
 
+	// 특정 게시글의 좋아요 수
+	Long countByPostId(Long postId);
+
 }

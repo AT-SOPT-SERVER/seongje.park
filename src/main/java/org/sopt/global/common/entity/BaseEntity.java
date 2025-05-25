@@ -1,4 +1,4 @@
-package org.sopt.common.entity;
+package org.sopt.global.common.entity;
 
 import java.time.LocalDateTime;
 
