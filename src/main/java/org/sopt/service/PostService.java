@@ -10,6 +10,7 @@ import org.sopt.dto.CommentResponse;
 import org.sopt.dto.PostCommentResponse;
 import org.sopt.dto.PostRequest;
 import org.sopt.dto.PostResponse;
+import org.sopt.dto.PostSearchCondition;
 import org.sopt.dto.PostSimpleResponse;
 import org.sopt.exception.AuthorityException;
 import org.sopt.exception.CommentException;
@@ -20,6 +21,8 @@ import org.sopt.repository.CommentRepository;
 import org.sopt.repository.UserRepository;
 import org.sopt.util.PostIdUtil;
 import org.sopt.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,14 +70,11 @@ public class PostService {
 
     // 게시글 전체조회에서는 , 제목과 게시글 작성자만 보이게.
     // 최신순으로 조회해야한다.
-    public List<PostResponse> getAllPosts() {
+    public Page<PostSimpleResponse> getAllPosts(Pageable pageable) {
 
-        List<Post> postList = postRepository.findAllByOrderByCreatedAtAsc();
+        Page<Post> postList = postRepository.findAllByOrderByCreatedAtAsc(pageable);
 
-        return postList.stream()
-                .map(p -> PostResponse.ofTitleAndUser(p.getId(), p.getTitle(),
-                        p.getUser().getName()))
-                .collect(Collectors.toList());
+        return postList.map(PostSimpleResponse::from);
     }
 
 
@@ -83,7 +83,8 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUser().getName());
+        return PostResponse.from(post);
+
     }
 
 
@@ -223,6 +224,11 @@ public class PostService {
             .toList();
 
         return list;
+
+    }
+
+    public Page<PostSimpleResponse> searchPostByTitleAndUserName(Pageable pageable , PostSearchCondition condition) {
+        return postRepository.searchByTitleAndAuthor(pageable, condition);
 
     }
 }

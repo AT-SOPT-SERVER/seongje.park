@@ -6,10 +6,14 @@ import org.sopt.dto.CommentResponse;
 import org.sopt.dto.PostCommentResponse;
 import org.sopt.dto.PostRequest;
 import org.sopt.dto.PostResponse;
+import org.sopt.dto.PostSearchCondition;
 import org.sopt.dto.PostSimpleResponse;
 import org.sopt.exception.ApiResponse;
 import org.sopt.service.PostService;
 import org.sopt.validator.PostValidator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,11 +45,12 @@ public class PostController {
     }
 
 
-    // 모든 게시글 조회
+    // 모든 게시글 조회(10개 단위로 페이징)
     @GetMapping("/posts")
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
+    public ResponseEntity<ApiResponse<Page<PostSimpleResponse>>> getAllPosts(
+        @PageableDefault(size = 10) Pageable pageable) {
 
-        List<PostResponse> posts = postService.getAllPosts();
+        Page<PostSimpleResponse> posts = postService.getAllPosts(pageable);
         return ResponseEntity.ok(ApiResponse.success(posts));
     }
 
@@ -73,6 +78,19 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(posts));
 
     }
+
+    // title, author 로 게시글 조회(페이징까지 같이)
+    // 페이징 사이즈는 기본 10개로 설정
+    @GetMapping("/posts/search")
+    public ResponseEntity<ApiResponse<Page<PostSimpleResponse>>> getPostByTitleAndUserName(
+        @PageableDefault(size = 10) Pageable pageable, @ModelAttribute PostSearchCondition condition) {
+
+        Page<PostSimpleResponse> posts = postService.searchPostByTitleAndUserName(pageable, condition);
+
+        return ResponseEntity.ok(ApiResponse.success(posts));
+
+    }
+
 
     //게시글 삭제
     @DeleteMapping("/posts/{id}")
