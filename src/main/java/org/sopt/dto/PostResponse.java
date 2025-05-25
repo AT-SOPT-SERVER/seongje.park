@@ -1,11 +1,10 @@
 package org.sopt.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.sopt.domain.Post;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public record PostResponse(Long id, String title, String content, String userName){
 
-    public static PostResponse ofTitleAndUser(Long id, String title, String userName){
-        return new PostResponse(id, title, null, userName);
+    public static PostResponse from(Post p) {
+        return new PostResponse(p.getId(), p.getTitle(), p.getContent(), p.getUser().getName());
     }
 }
