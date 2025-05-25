@@ -15,7 +15,7 @@ public interface PostRepository extends JpaRepository<Post, Long> , PostReposito
 
     Optional<Post> findByTitleContaining(String title);
 
-    Page<Post> findAllByOrderByCreatedAtAsc(Pageable pageable);
+    // Page<Post> findAllByOrderByCreatedAtAsc(Pageable pageable);
 
     Optional<List<Post>> findByUserNameContaining(String userName);
 

@@ -72,7 +72,13 @@ public class PostService {
     // 최신순으로 조회해야한다.
     public Page<PostSimpleResponse> getAllPosts(Pageable pageable) {
 
-        Page<Post> postList = postRepository.findAllByOrderByCreatedAtAsc(pageable);
+        // Page<Post> postList = postRepository.findAllByOrderByCreatedAtAsc(pageable);
+        Page<Post> postList = postRepository.findAll(pageable);
+
+        // 근데.. 주석처리한 방식이랑 아래 방식 중 뭘 사용해야할까?
+        // 첫번째 방식은 고정된 정렬 방식임. 동적 정렬이 불가
+        // 반면, 두번째 방식은 클라이언트가 sort 에 정렬 방식을 주면, 서버에서 동적으로 정렬이 가능.
+        
 
         return postList.map(PostSimpleResponse::from);
     }
