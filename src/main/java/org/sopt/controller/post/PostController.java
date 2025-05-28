@@ -12,6 +12,7 @@ import org.sopt.service.PostService;
 import org.sopt.validator.PostValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +37,6 @@ public class PostController {
             @RequestHeader Long userId,
             @RequestBody @Valid final PostRequest postCreateRequest) {
 
-        PostValidator.validateTitle(postCreateRequest.title());
-        // 제목이 비어있지 않고, 제목이 30자를 넘지않는다면 이제 게시글을 작성하자.
-        // 검증사항 추가 ++ : 게시글 내용은 1,000자를 넘지 않아야 한다.
         PostSimpleResponse createdPost = postService.createPost(userId, postCreateRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -46,8 +44,8 @@ public class PostController {
     }
 
 
-    // 모든 게시글 조회(10개 단위로 페이징)
-    @GetMapping("/posts")
+    // 모든 게시글 조회(10개 단위로 페이징) - 이 방식은 offset , limit 방식의 페이징임
+    // @GetMapping("/posts")
     public ResponseEntity<ApiResponse<Page<PostSimpleResponse>>> getAllPosts(
         @PageableDefault(size = 10) Pageable pageable) {
 
@@ -55,11 +53,27 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(posts));
     }
 
+    // 페이징 조회를 커서 기반 페이징으로 바꾸어보자.(대용량 데이터에 더 적합)
+    @GetMapping("/posts")
+    public ResponseEntity<ApiResponse<Slice<PostSimpleResponse>>> getAllPostsByCursor(
+        @PageableDefault(size = 10) Pageable pageable,
+        @RequestParam(required = false) Long cursorId) {
+
+        Slice<PostSimpleResponse> posts = postService.getPostsByCursor(cursorId, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success(posts));
+    }
+
+
+
+
+
+
     // id 로 게시글 조회
     @GetMapping("/posts/{id}")
     public ResponseEntity<ApiResponse<PostResponse>> getPostById(@PathVariable("id") Long id) {
 
-        PostResponse post = postService.getPostById(id);
+        PostResponse post = postService.getPostByIdWithUser(id);
         return ResponseEntity.ok(ApiResponse.success(post));
     }
 

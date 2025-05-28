@@ -21,10 +21,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -130,18 +132,25 @@ public class PostService {
         // 근데.. 주석처리한 방식이랑 아래 방식 중 뭘 사용해야할까?
         // 첫번째 방식은 고정된 정렬 방식임. 동적 정렬이 불가
         // 반면, 두번째 방식은 클라이언트가 sort 에 정렬 방식을 주면, 서버에서 동적으로 정렬이 가능.
+        // 클라이언트 쪽에서 Pageable 객체에 sort 조건을 줄 수 있기 때문에.
 
 
         return postList.map(PostSimpleResponse::from);
     }
 
+    public Slice<PostSimpleResponse> getPostsByCursor(Long cursorId, Pageable pageable) {
+        return postRepository.findPostsWithCursor(cursorId, pageable);
+
+
+    }
     // querydsl 로 동적 쿼리 검색 (제목, 작성자 기준)
+
     public Page<PostSimpleResponse> searchPostByTitleAndUserName(Pageable pageable , PostSearchCondition condition) {
         return postRepository.searchByTitleAndAuthor(pageable, condition);
 
     }
-
     // 게시글 단건 상세 조회에서는 , 제목과 내용, 작성자가 모두 보이도록 설정
+
     public PostResponse getPostById(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
@@ -160,7 +169,6 @@ public class PostService {
     }
 
     // 게시글 수정 기능(게시글 id 와 수정 내용을 주면, 해당 id 를 가진 게시글을 수정)
-
     @Transactional
     public void editPost(Long id , String title){
 
@@ -176,6 +184,7 @@ public class PostService {
         System.out.println("수정 성공 : " + foundPost.getTitle());
 
     }
+
     public PostResponse searchPostByTitle(String title) {
         Post post = postRepository.findByTitleContaining(title)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
@@ -198,8 +207,8 @@ public class PostService {
             throw new PostException(DUPLICATE_TITLE);
         }
     }
-
     // 댓글 작성 기능
+
     @Transactional
     @CacheEvict(value = "postComments" , key = "#postId")
     public PostResponse writeComment(Long userId, Long postId, CommentCreateRequest createRequest) {
@@ -214,9 +223,9 @@ public class PostService {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
+        // builder 안에서 연관관계 세팅 및 양방향 연결 완료.
         Comment comment = Comment.createComment(createRequest.content(), user, post);
 
-        // builder 안에서 연관관계 세팅 및 양방향 연결 완료.
         commentRepository.save(comment);
 
         // 댓글 작성 결과 반환
@@ -224,8 +233,8 @@ public class PostService {
 
 
     }
-
     // 댓글 수정 기능
+
     @Transactional
     public CommentResponse editComment(Long userId, Long commentId, CommentEditRequest editRequest) {
 
@@ -246,7 +255,7 @@ public class PostService {
 
         // 수정된 댓글이 속한 게시글의 댓글 목록 캐시 무효화
         evictPostCommentsCache(comment.getPost().getId());
-        
+
         return CommentResponse.from(comment);
 
     }
@@ -264,8 +273,8 @@ public class PostService {
             throw new AuthorityException(AUTHORIZATION_FAIL);
         }
     }
-
     // 댓글 삭제 기능
+
     public void deleteComment(Long userId, Long commentId) {
 
         // userId로 회원 조회
@@ -284,7 +293,7 @@ public class PostService {
 
         // 삭제될 댓글이 속한 게시글 ID 저장
         Long postId = comment.getPost().getId();
-        
+
         // 삭제된 댓글이 속한 게시글의 댓글 목록 캐시 무효화
         evictPostCommentsCache(postId);
 
@@ -310,5 +319,10 @@ public class PostService {
 
     }
 
+    public PostResponse getPostByIdWithUser(Long id) {
+        Post post = postRepository.findByIdWithUser(id)
+            .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
+        return PostResponse.from(post);
+    }
 }

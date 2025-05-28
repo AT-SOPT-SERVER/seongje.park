@@ -10,6 +10,8 @@ import org.sopt.dto.post.PostSimpleResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.Projections;
@@ -17,6 +19,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -33,9 +36,40 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 	}
 
 	@Override
+	public Slice<PostSimpleResponse> findPostsWithCursor(Long cursorId, Pageable pageable) {
+
+		JPAQuery<PostSimpleResponse> query = queryFactory
+			.select(Projections.constructor(PostSimpleResponse.class,
+				post.id,
+				post.title,
+				post.user.name.as("userName"),
+				post.createdAt))
+			.from(post)
+			.leftJoin(post.user, user)
+			.orderBy(post.createdAt.desc(), post.id.desc());
+
+		if (cursorId != null) {
+			query.where(post.id.lt(cursorId));
+		}
+
+		// 페이지 크기 + 1 로 조회해서, 다음 페이지가 있는지 확인한다.
+		List<PostSimpleResponse> posts = query
+			.limit(pageable.getPageSize() + 1)
+			.fetch();
+
+		boolean hasNext = posts.size() > pageable.getPageSize();
+		// 다음 페이지가 있는지 확인했으면, 하나 더 조회한거 제거하고 넘겨야되니까
+		if (hasNext) {
+			posts.remove(posts.size() - 1);
+		}
+
+		return new SliceImpl<>(posts, pageable, hasNext);
+	}
+
+	@Override
 	public Page<PostSimpleResponse> searchByTitleAndAuthor(Pageable pageable, PostSearchCondition cond) {
 
-		// 페이징을 위한 쿼리
+		// 페이징을 위한 쿼리 (offset, limit 방식)
 		// 처음에 생성자 projection 대신, field projection 을 썼는데..
 		// field Projection 에서는 기본 생성자 + setter 가 필요하나, 레코드는 기본 생성자 , setter 가 없으므로
 		// 매핑이 안됐었음... 그래서 생성자 방식으로 전환.
@@ -44,7 +78,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 			.select(Projections.constructor(PostSimpleResponse.class,
 				post.id,
 				post.title,
-				post.user.name.as("userName")
+				post.user.name.as("userName"),
+				post.createdAt
 			))
 			.from(post)
 			.leftJoin(post.user, user)
