@@ -59,7 +59,7 @@ public class Comment extends BaseEntity {
 	private Integer likeCount = 0;
 
 	// 댓글의 좋아요 정보 리스트
-	@OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(mappedBy = "comment", orphanRemoval = true)
 	private List<CommentLike> likes = new ArrayList<>();
 
 	// 댓글의 좋아요 수 증가

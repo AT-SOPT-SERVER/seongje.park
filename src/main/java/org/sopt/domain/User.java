@@ -25,11 +25,11 @@ public class User extends BaseEntity {
     private String email;
 
     // User 가 작성한 게시글
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
     // User 가 작성한 댓글
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "author")
     private List<Comment> comments = new ArrayList<>();
 
 
