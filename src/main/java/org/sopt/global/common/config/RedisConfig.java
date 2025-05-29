@@ -51,14 +51,12 @@ public class RedisConfig {
 
 	@Bean
 	public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-		// ✅ 타입 정보 없는 깔끔한 ObjectMapper 설정
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 		objectMapper.registerModule(new JavaTimeModule());
 		objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-		// ✅ 타입 정보 활성화 제거 (이게 문제였음!)
-		// objectMapper.activateDefaultTyping() 제거
 
 		GenericJackson2JsonRedisSerializer jsonSerializer =
 			new GenericJackson2JsonRedisSerializer(objectMapper);

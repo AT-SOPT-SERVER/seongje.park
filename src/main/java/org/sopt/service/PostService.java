@@ -160,22 +160,35 @@ public class PostService {
     }
 
 
+    // 게시글 삭제
     @Transactional
-    public void deletePost(Long id) {
+    public void deletePost(Long userId, Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+        // 작성자 본인만 삭제할 수 있도록 검증
+        authorize(userId, post);
 
         postRepository.delete(post);
     }
 
+    private static void authorize(Long userId, Post post) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new PostException(UNAUTHORIZED_ACCESS);
+        }
+    }
+
     // 게시글 수정 기능(게시글 id 와 수정 내용을 주면, 해당 id 를 가진 게시글을 수정)
     @Transactional
-    public void editPost(Long id , String title){
+    public void editPost(Long userId, Long id , String title){
 
         validateTitleExists(title);
 
         Post foundPost = postRepository.findById(id)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+        // 작성자 본인만 수정할 수 있도록 검증
+        authorize(userId, foundPost);
 
         foundPost.changeTitle(title);
         // 영속성 컨텍스트는 변경감지 기능이 있기 때문에, save 따로 해줄 필요 없음

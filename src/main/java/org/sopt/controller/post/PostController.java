@@ -8,8 +8,9 @@ import org.sopt.dto.post.PostRequest;
 import org.sopt.dto.PostSearchCondition;
 import org.sopt.dto.post.PostSimpleResponse;
 import org.sopt.exception.ApiResponse;
+import org.sopt.exception.ErrorCode;
+import org.sopt.exception.PostException;
 import org.sopt.service.PostService;
-import org.sopt.validator.PostValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -34,8 +36,11 @@ public class PostController {
     // 게시글 작성하기
     @PostMapping("/post")
     public ResponseEntity<ApiResponse<PostSimpleResponse>> createPost(
-            @RequestHeader Long userId,
-            @RequestBody @Valid final PostRequest postCreateRequest) {
+            HttpServletRequest request,
+            @RequestBody @Valid PostRequest postCreateRequest) {
+
+        // jwt 필터에서 설정한 userId 가져오기
+        Long userId = getUserIdFromRequest(request);
 
         PostSimpleResponse createdPost = postService.createPost(userId, postCreateRequest);
 
@@ -63,9 +68,6 @@ public class PostController {
 
         return ResponseEntity.ok(ApiResponse.success(posts));
     }
-
-
-
 
 
 
@@ -109,19 +111,24 @@ public class PostController {
 
     //게시글 삭제
     @DeleteMapping("/posts/{id}")
-    public ResponseEntity<ApiResponse<Void>> deletePostById(@PathVariable("id") Long id) {
+    public ResponseEntity<ApiResponse<Void>> deletePostById(
+        HttpServletRequest request,
+        @PathVariable("id") Long id) {
 
-        postService.deletePost(id);
+        Long userId = getUserIdFromRequest(request);
+        postService.deletePost(userId, id);
         // api 응답필요
         return ResponseEntity.ok(ApiResponse.success(null, "게시글이 성공적으로 삭제되었습니다."));
     }
 
     // 게시글 수정
     @PatchMapping("/posts/{id}")
-    public ResponseEntity<ApiResponse<Void>> changePostTitle(@PathVariable("id") Long id, @RequestBody PostRequest editRequest){
+    public ResponseEntity<ApiResponse<Void>> changePostTitle(
+        HttpServletRequest request,
+        @PathVariable("id") Long id, @RequestBody @Valid PostRequest editRequest){
 
-        PostValidator.validateTitle(editRequest.title());
-        postService.editPost(id, editRequest.title());
+        Long userId = getUserIdFromRequest(request);
+        postService.editPost(userId, id, editRequest.title());
         // api 응답 필요
 
         return ResponseEntity.ok(ApiResponse.success(null, "게시글이 성공적으로 수정되었습니다."));
@@ -174,6 +181,14 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(comments, "댓글 조회 성공"));
     }
 
+
+    private Long getUserIdFromRequest(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            throw new PostException(ErrorCode.INVALID_TOKEN);
+        }
+        return userId;
+    }
 
 
 

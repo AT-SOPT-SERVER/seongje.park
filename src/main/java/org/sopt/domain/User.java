@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 패스워드 추가
+    private String password;
+
     private String name;
 
     private String email;
@@ -38,5 +41,9 @@ public class User extends BaseEntity {
         this.email = email;
     }
 
-
+    public User(String name, String password, String email) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+    }
 }

@@ -21,6 +21,22 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserException(UserException e) {
+
+        ErrorCode errorCode = e.getErrorCode();
+        ApiResponse<Void> response = ApiResponse.error(errorCode.getStatus(), errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
+
+        ApiResponse<Void> response = ApiResponse.error(400, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException e) {
 
