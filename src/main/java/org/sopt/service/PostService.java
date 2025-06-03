@@ -333,7 +333,7 @@ public class PostService {
     }
 
     public PostResponse getPostByIdWithUser(Long id) {
-        Post post = postRepository.findByIdWithUser(id)
+        Post post = postRepository.findPostWithUserById(id)
             .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
         return PostResponse.from(post);
