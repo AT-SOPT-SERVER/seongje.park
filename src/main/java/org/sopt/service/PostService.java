@@ -206,8 +206,8 @@ public class PostService {
     }
 
     public List<PostResponse> searchPostByAuthor(String userName){
-        List<Post> post = postRepository.findByUserNameContaining(userName)
-                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+        List<Post> post = postRepository.findByUserNameContaining(userName);
+
 
         return post.stream()
                 .map(PostResponse::from)

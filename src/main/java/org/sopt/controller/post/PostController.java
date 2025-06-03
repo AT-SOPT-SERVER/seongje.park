@@ -96,11 +96,12 @@ public class PostController {
 
     }
 
+    // 동적 쿼리.
     // title, author 로 게시글 조회(페이징까지 같이)
     // 페이징 사이즈는 기본 10개로 설정
     @GetMapping("/posts/search")
     public ResponseEntity<ApiResponse<Page<PostSimpleResponse>>> getPostByTitleAndUserName(
-        @PageableDefault(size = 10) Pageable pageable, @ModelAttribute PostSearchCondition condition) {
+        @PageableDefault(size = 10) Pageable pageable, PostSearchCondition condition) {
 
         Page<PostSimpleResponse> posts = postService.searchPostByTitleAndUserName(pageable, condition);
 

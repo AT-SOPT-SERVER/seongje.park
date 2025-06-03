@@ -28,7 +28,9 @@ public class PostLikeService {
 	@Transactional
 	public PostResponse likePost(Long postId, Long userId) {
 
-		Post post = postRepository.findById(postId)
+		// post 를 조회할때 락을 획득. 락은 트랜잭션 끝나면 반납한다.
+		// 락을 가지고 있는 동안 다른 트랜잭션은 , read, update 못함.
+		Post post = postRepository.findByIdWithLock(postId)
 			.orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
 		User user = userRepository.findById(userId)
