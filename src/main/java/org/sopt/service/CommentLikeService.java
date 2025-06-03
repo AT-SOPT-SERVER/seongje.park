@@ -32,7 +32,10 @@ public class CommentLikeService {
 	@Transactional
 	public CommentResponse likeComment(Long commentId, Long userId) {
 
-		Comment comment = commentRepository.findById(commentId)
+		// Comment 를 조회해올 때, X 락을 획득.
+		// likeComment 가 트랜잭션 끝(commit or rollback) 나기 전까지,
+		// 다른 트랜잭션에서 Comment 에 대한 조회, 수정이 불가능.
+		Comment comment = commentRepository.findByIdWithLock(commentId)
 			.orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
 
 		User user = userRepository.findById(userId)
