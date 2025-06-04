@@ -30,9 +30,8 @@ public interface PostRepository extends JpaRepository<Post, Long> , PostReposito
 
 
     // 좋아요 처리에 대한 동시성 보장이 100% 되어있지 않음. race condition 발생 가능.
-    // X 락 가져오면, 같은 게시글에 대한 조회도 막음.
-    // 조회 성능에 문제가 생길 수 있음. S 락으로 설정하자.
-    @Lock(LockModeType.PESSIMISTIC_READ)
+    // X 락으로 설정. UPDATE 해야하므로
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(attributePaths = {"user"})
     Optional<Post> findCommentWithLockById(Long id);
 }
