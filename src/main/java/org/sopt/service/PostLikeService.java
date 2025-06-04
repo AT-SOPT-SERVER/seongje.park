@@ -2,6 +2,7 @@ package org.sopt.service;
 
 import static org.sopt.exception.ErrorCode.*;
 
+import org.sopt.domain.Comment;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.domain.like.PostLike;
@@ -37,6 +38,9 @@ public class PostLikeService {
 			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
 
+		authorize(userId, post);
+
+
 		// 해당 유저가, 좋아요를 여러번 누를 수 없게 설정하자
 		// 해당 유저가 좋아요를 이미 누른 경우라면, count - 1
 		// 누르지 않은 경우라면 , count + 1
@@ -60,5 +64,11 @@ public class PostLikeService {
 		}
 
 		return PostResponse.from(post);
+	}
+
+	private static void authorize(Long userId, Post post) {
+		if (!post.getUser().getId().equals(userId)) {
+			throw new PostException(UNAUTHORIZED_ACCESS);
+		}
 	}
 }

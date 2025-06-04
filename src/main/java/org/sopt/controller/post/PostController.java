@@ -140,9 +140,10 @@ public class PostController {
     // 댓글 작성 (어떤 게시물에 누가 댓글을 작성할 것인지 알아야함)
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<PostResponse>> makeComment(
-        @RequestHeader Long userId,
+        HttpServletRequest request,
         @PathVariable("postId") Long postId, @RequestBody @Valid CommentCreateRequest createRequest){
 
+        Long userId = getUserIdFromRequest(request);
         PostResponse createdComment = postService.writeComment(userId, postId, createRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -153,9 +154,10 @@ public class PostController {
     // 댓글 수정 .
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponse>> editComment(
-        @RequestHeader Long userId, @PathVariable("commentId") Long commentId,
+        HttpServletRequest request, @PathVariable("commentId") Long commentId,
         @RequestBody CommentEditRequest editRequest){
 
+        Long userId = getUserIdFromRequest(request);
         CommentResponse editedComment = postService.editComment(userId, commentId, editRequest);
 
         return ResponseEntity.ok(ApiResponse.success(editedComment, "댓글이 성공적으로 수정되었습니다."));
@@ -165,8 +167,9 @@ public class PostController {
     // 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
-        @RequestHeader Long userId, @PathVariable("commentId") Long commentId){
+        HttpServletRequest request, @PathVariable("commentId") Long commentId){
 
+        Long userId = getUserIdFromRequest(request);
         postService.deleteComment(userId, commentId);
 
         return ResponseEntity.ok(ApiResponse.success(null, "댓글 삭제가 성공적으로 수행되었습니다."));

@@ -3,10 +3,12 @@ package org.sopt.service;
 import static org.sopt.exception.ErrorCode.*;
 
 import org.sopt.domain.Comment;
+import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.domain.like.CommentLike;
 import org.sopt.dto.comment.CommentResponse;
 import org.sopt.exception.CommentException;
+import org.sopt.exception.PostException;
 import org.sopt.exception.UserException;
 import org.sopt.repository.like.CommentLikeRepository;
 import org.sopt.repository.comment.CommentRepository;
@@ -35,11 +37,14 @@ public class CommentLikeService {
 		// Comment 를 조회해올 때, X 락을 획득.
 		// likeComment 가 트랜잭션 끝(commit or rollback) 나기 전까지,
 		// 다른 트랜잭션에서 Comment 에 대한 조회, 수정이 불가능.
-		Comment comment = commentRepository.findByIdWithLock(commentId)
+		Comment comment = commentRepository.findCommentWithLockById(commentId)
 			.orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+		//authorize
+		authorize(userId, comment);
 
 
 		// 해당 유저가, 좋아요를 여러번 누를 수 없게 설정하자
@@ -75,6 +80,13 @@ public class CommentLikeService {
 	@CacheEvict(value = "postComments", key = "#postId")
 	public void evictPostCommentsCache(Long postId) {
 		log.info("댓글 좋아요 변경으로 댓글 목록 캐시 무효화: postId = {}", postId);
+	}
+
+
+	private static void authorize(Long userId, Comment comment) {
+		if (!comment.getAuthor().getId().equals(userId)) {
+			throw new PostException(UNAUTHORIZED_ACCESS);
+		}
 	}
 
 }
