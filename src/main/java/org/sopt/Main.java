@@ -1,11 +1,10 @@
 package org.sopt;
 
-import java.util.Scanner;
-import org.sopt.controller.PostController;
-import org.sopt.domain.Post;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
